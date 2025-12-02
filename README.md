@@ -51,6 +51,7 @@ The frontend will be available at: `http://localhost:4200`
 
 - **Backend API Documentation**: [backend/API_DOCUMENTATION.md](backend/API_DOCUMENTATION.md)
 - **Maven Commands**: [backend/MAVEN_COMMANDS.md](backend/MAVEN_COMMANDS.md)
+- **Git Operations Guide**: [GIT_GUIDE.md](GIT_GUIDE.md) - How to manage code changes with Git
 
 ## 🛠️ Technologies
 
