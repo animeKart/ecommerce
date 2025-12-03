@@ -2,8 +2,12 @@
     <h2 class="text-2xl font-bold mb-6">Register</h2>
     <form (ngSubmit)="register()">
         <div class="mb-4">
-            <label class="block text-gray-700 mb-2">Name</label>
-            <input [(ngModel)]="name" name="name" type="text" class="w-full p-2 border rounded" required>
+            <label class="block text-gray-700 mb-2">First Name</label>
+            <input [(ngModel)]="firstName" name="firstName" type="text" class="w-full p-2 border rounded" required>
+        </div>
+        <div class="mb-4">
+            <label class="block text-gray-700 mb-2">Last Name</label>
+            <input [(ngModel)]="lastName" name="lastName" type="text" class="w-full p-2 border rounded" required>
         </div>
         <div class="mb-4">
             <label class="block text-gray-700 mb-2">Email</label>
@@ -11,8 +15,13 @@
         </div>
         <div class="mb-6">
             <label class="block text-gray-700 mb-2">Password</label>
-            <input [(ngModel)]="password" name="password" type="password" class="w-full p-2 border rounded" required>
+            <input [(ngModel)]="password" name="password" type="password" class="w-full p-2 border rounded"
+                minlength="6" required>
         </div>
         <button type="submit" class="w-full bg-green-500 text-white p-2 rounded hover:bg-green-600">Register</button>
+        <p class="mt-4 text-center text-sm">
+            Already have an account?
+            <a routerLink="/login" class="text-blue-500 hover:underline">Login here</a>
+        </p>
     </form>
 </div>

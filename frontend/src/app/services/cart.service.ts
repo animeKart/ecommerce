@@ -1,33 +1,93 @@
-import { Injectable, signal } from '@angular/core';
-
-export interface CartItem {
-    id: number;
-    name: string;
-    price: number;
-    quantity: number;
-}
+import { Injectable, inject, signal } from '@angular/core';
+import { ApiService } from './api.service';
+import { ApiResponse, Cart, AddToCartRequest, UpdateCartItemRequest } from '../models/api.models';
+import { Observable, tap } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Injectable({
     providedIn: 'root'
 })
 export class CartService {
+    private api = inject(ApiService);
+
+    // Signals for reactive cart state
+    cart = signal<Cart | null>(null);
     cartCount = signal(0);
-    cartItems = signal<CartItem[]>([]);
 
-    addToCart(product: any) {
-        this.cartCount.update(count => count + 1);
-
-        this.cartItems.update(items => {
-            const existing = items.find(i => i.id === product.id);
-            if (existing) {
-                return items.map(i => i.id === product.id ? { ...i, quantity: i.quantity + 1 } : i);
-            }
-            return [...items, { ...product, quantity: 1 }];
-        });
+    getCart(): Observable<Cart> {
+        return this.api.get<ApiResponse<Cart>>('/api/cart').pipe(
+            map(response => {
+                if (!response.success) {
+                    throw new Error(response.message);
+                }
+                return response.data;
+            }),
+            tap(cart => {
+                this.cart.set(cart);
+                this.cartCount.set(cart.items.reduce((sum, item) => sum + item.quantity, 0));
+            })
+        );
     }
 
-    clearCart() {
-        this.cartCount.set(0);
-        this.cartItems.set([]);
+    addToCart(request: AddToCartRequest): Observable<Cart> {
+        return this.api.post<ApiResponse<Cart>>('/api/cart/items', request).pipe(
+            map(response => {
+                if (!response.success) {
+                    throw new Error(response.message);
+                }
+                return response.data;
+            }),
+            tap(cart => {
+                this.cart.set(cart);
+                this.cartCount.set(cart.items.reduce((sum, item) => sum + item.quantity, 0));
+            })
+        );
+    }
+
+    updateItemQuantity(productId: string, quantity: number): Observable<Cart> {
+        const request: UpdateCartItemRequest = { quantity };
+        return this.api.put<ApiResponse<Cart>>(`/api/cart/items/${productId}`, request).pipe(
+            map(response => {
+                if (!response.success) {
+                    throw new Error(response.message);
+                }
+                return response.data;
+            }),
+            tap(cart => {
+                this.cart.set(cart);
+                this.cartCount.set(cart.items.reduce((sum, item) => sum + item.quantity, 0));
+            })
+        );
+    }
+
+    removeItem(productId: string): Observable<Cart> {
+        return this.api.delete<ApiResponse<Cart>>(`/api/cart/items/${productId}`).pipe(
+            map(response => {
+                if (!response.success) {
+                    throw new Error(response.message);
+                }
+                return response.data;
+            }),
+            tap(cart => {
+                this.cart.set(cart);
+                this.cartCount.set(cart.items.reduce((sum, item) => sum + item.quantity, 0));
+            })
+        );
+    }
+
+    clearCart(): Observable<void> {
+        return this.api.delete<ApiResponse<null>>('/api/cart').pipe(
+            map(response => {
+                if (!response.success) {
+                    throw new Error(response.message);
+                }
+                return;
+            }),
+            tap(() => {
+                this.cart.set(null);
+                this.cartCount.set(0);
+            })
+        );
     }
 }
+

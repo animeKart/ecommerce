@@ -1,4 +1,4 @@
-# Git Operations Guide
+l̥# Git Operations Guide
 
 Complete guide for managing Git operations in the E-Commerce monorepo project.
 

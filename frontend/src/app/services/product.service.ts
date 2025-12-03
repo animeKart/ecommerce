@@ -1,6 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { ApiService } from './api.service';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
+import { ApiResponse, PaginatedResponse, Product, CreateProductRequest, UpdateProductRequest } from '../models/api.models';
+import { map } from 'rxjs/operators';
 
 @Injectable({
     providedIn: 'root'
@@ -8,17 +10,93 @@ import { Observable, of } from 'rxjs';
 export class ProductService {
     private api = inject(ApiService);
 
-    getAllProducts(): Observable<any[]> {
-        // Mock data for MVP
-        return of([
-            { id: 1, name: 'Product 1', price: 100, description: 'Description 1' },
-            { id: 2, name: 'Product 2', price: 200, description: 'Description 2' },
-            { id: 3, name: 'Product 3', price: 300, description: 'Description 3' },
-            { id: 4, name: 'Product 4', price: 400, description: 'Description 4' },
-        ]);
+    getAllProducts(page: number = 0, size: number = 10): Observable<PaginatedResponse<Product>> {
+        return this.api.get<ApiResponse<PaginatedResponse<Product>>>(`/api/products?page=${page}&size=${size}`).pipe(
+            map(response => {
+                if (!response.success) {
+                    throw new Error(response.message);
+                }
+                return response.data;
+            })
+        );
     }
 
-    getProduct(id: number): Observable<any> {
-        return of({ id, name: `Product ${id}`, price: 100 * id, description: `Description ${id}` });
+    getProduct(id: string): Observable<Product> {
+        return this.api.get<ApiResponse<Product>>(`/api/products/${id}`).pipe(
+            map(response => {
+                if (!response.success) {
+                    throw new Error(response.message);
+                }
+                return response.data;
+            })
+        );
+    }
+
+    searchProducts(query: string, page: number = 0, size: number = 10): Observable<PaginatedResponse<Product>> {
+        return this.api.get<ApiResponse<PaginatedResponse<Product>>>(`/api/products/search?q=${encodeURIComponent(query)}&page=${page}&size=${size}`).pipe(
+            map(response => {
+                if (!response.success) {
+                    throw new Error(response.message);
+                }
+                return response.data;
+            })
+        );
+    }
+
+    getProductsByCategory(category: string, page: number = 0, size: number = 10): Observable<PaginatedResponse<Product>> {
+        return this.api.get<ApiResponse<PaginatedResponse<Product>>>(`/api/products/category/${encodeURIComponent(category)}?page=${page}&size=${size}`).pipe(
+            map(response => {
+                if (!response.success) {
+                    throw new Error(response.message);
+                }
+                return response.data;
+            })
+        );
+    }
+
+    getProductsByPriceRange(minPrice: number, maxPrice: number, page: number = 0, size: number = 10): Observable<PaginatedResponse<Product>> {
+        return this.api.get<ApiResponse<PaginatedResponse<Product>>>(`/api/products/price-range?minPrice=${minPrice}&maxPrice=${maxPrice}&page=${page}&size=${size}`).pipe(
+            map(response => {
+                if (!response.success) {
+                    throw new Error(response.message);
+                }
+                return response.data;
+            })
+        );
+    }
+
+    // Admin operations
+    createProduct(product: CreateProductRequest): Observable<Product> {
+        return this.api.post<ApiResponse<Product>>('/api/products', product).pipe(
+            map(response => {
+                if (!response.success) {
+                    throw new Error(response.message);
+                }
+                return response.data;
+            })
+        );
+    }
+
+    updateProduct(id: string, product: UpdateProductRequest): Observable<Product> {
+        return this.api.put<ApiResponse<Product>>(`/api/products/${id}`, product).pipe(
+            map(response => {
+                if (!response.success) {
+                    throw new Error(response.message);
+                }
+                return response.data;
+            })
+        );
+    }
+
+    deleteProduct(id: string): Observable<void> {
+        return this.api.delete<ApiResponse<null>>(`/api/products/${id}`).pipe(
+            map(response => {
+                if (!response.success) {
+                    throw new Error(response.message);
+                }
+                return;
+            })
+        );
     }
 }
+
