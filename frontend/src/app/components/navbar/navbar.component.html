@@ -3,21 +3,23 @@
     <a routerLink="/" class="text-xl font-bold">MyStore</a>
     <div class="flex gap-4 items-center">
       <a routerLink="/" routerLinkActive="text-blue-400" [routerLinkActiveOptions]="{exact: true}">Home</a>
-      
+
       @if (authService.isLoggedIn()) {
-        <button (click)="authService.logout()" class="hover:text-red-400">Logout</button>
-      } @else {
-        <a routerLink="/login" routerLinkActive="text-blue-400">Login</a>
-      }
-      
-      <a routerLink="/cart" class="relative">
+      <a routerLink="/orders" routerLinkActive="text-blue-400">Orders</a>
+      <a routerLink="/profile" routerLinkActive="text-blue-400">Profile</a>
+      <a routerLink="/cart" routerLinkActive="text-blue-400" class="relative">
         Cart
         @if (cartService.cartCount() > 0) {
-          <span class="absolute -top-2 -right-3 bg-red-500 text-white text-xs rounded-full px-1">
-            {{ cartService.cartCount() }}
-          </span>
+        <span class="absolute -top-2 -right-3 bg-red-500 text-white text-xs rounded-full px-2">
+          {{ cartService.cartCount() }}
+        </span>
         }
       </a>
+      <button (click)="authService.logout()" class="hover:text-red-400">Logout</button>
+      } @else {
+      <a routerLink="/login" routerLinkActive="text-blue-400">Login</a>
+      <a routerLink="/register" routerLinkActive="text-blue-400">Register</a>
+      }
     </div>
   </div>
 </nav>

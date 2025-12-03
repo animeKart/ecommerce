@@ -1,8 +1,36 @@
 <div class="container mx-auto p-4">
     <h1 class="text-3xl font-bold mb-6">Our Products</h1>
+    
+    @if (loading()) {
+        <div class="text-center py-8">Loading products...</div>
+    }
+    
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        @for (product of products$ | async; track product.id) {
-        <app-product-card [product]="product"></app-product-card>
+        @for (product of products(); track product.id) {
+            <app-product-card [product]="product"></app-product-card>
         }
     </div>
+
+    @if (!loading() && products().length === 0) {
+        <div class="text-center py-8 text-gray-500">No products found.</div>
+    }
+
+    <!-- Pagination Controls -->
+    @if (totalPages() > 1) {
+        <div class="flex justify-center items-center gap-4 mt-8">
+            <button 
+                (click)="previousPage()" 
+                [disabled]="currentPage() === 0"
+                class="px-4 py-2 bg-blue-600 text-white rounded disabled:bg-gray-400 disabled:cursor-not-allowed hover:bg-blue-700">
+                Previous
+            </button>
+            <span class="text-gray-700">Page {{ currentPage() + 1 }} of {{ totalPages() }}</span>
+            <button 
+                (click)="nextPage()" 
+                [disabled]="currentPage() >= totalPages() - 1"
+                class="px-4 py-2 bg-blue-600 text-white rounded disabled:bg-gray-400 disabled:cursor-not-allowed hover:bg-blue-700">
+                Next
+            </button>
+        </div>
+    }
 </div>

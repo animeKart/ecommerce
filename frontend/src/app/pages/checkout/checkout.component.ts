@@ -1,51 +1,84 @@
-import { Component, inject, ViewChild } from '@angular/core';
-import { StripeService, StripeCardComponent } from 'ngx-stripe';
-import { StripeCardElementOptions, StripeElementsOptions } from '@stripe/stripe-js';
-import { ApiService } from '../../services/api.service';
+import { Component, inject, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { OrderService } from '../../services/order.service';
+import { CartService } from '../../services/cart.service';
+import { Router, RouterLink } from '@angular/router';
+import { Address } from '../../models/api.models';
+import { CurrencyPipe } from '@angular/common';
 
 @Component({
   selector: 'app-checkout',
   standalone: true,
-  imports: [StripeCardComponent],
+  imports: [FormsModule, CurrencyPipe, RouterLink],
   templateUrl: './checkout.component.html',
   styles: ``
 })
 export class CheckoutComponent {
-  @ViewChild(StripeCardComponent) card!: StripeCardComponent;
-  stripeService = inject(StripeService);
-  apiService = inject(ApiService);
+  orderService = inject(OrderService);
+  cartService = inject(CartService);
+  router = inject(Router);
 
-  cardOptions: StripeCardElementOptions = {
-    style: {
-      base: {
-        iconColor: '#666EE8',
-        color: '#31325F',
-        fontWeight: '300',
-        fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
-        fontSize: '18px',
-        '::placeholder': {
-          color: '#CFD7E0'
-        }
+  loading = signal(false);
+  submitting = signal(false);
+
+  // Shipping address form
+  shippingAddress: Address = {
+    street: '',
+    city: '',
+    state: '',
+    zipCode: '',
+    country: 'USA'
+  };
+
+  ngOnInit() {
+    this.loadCart();
+  }
+
+  loadCart() {
+    this.loading.set(true);
+    this.cartService.getCart().subscribe({
+      next: () => this.loading.set(false),
+      error: (err) => {
+        console.error('Failed to load cart:', err);
+        this.loading.set(false);
+        alert('Failed to load cart. Please try again.');
+        this.router.navigate(['/cart']);
       }
+    });
+  }
+
+  placeOrder() {
+    if (!this.validateAddress()) {
+      alert('Please fill in all address fields');
+      return;
     }
-  };
 
-  elementsOptions: StripeElementsOptions = {
-    locale: 'en'
-  };
+    if (!this.cartService.cart() || this.cartService.cart()!.items.length === 0) {
+      alert('Your cart is empty');
+      return;
+    }
 
-  pay() {
-    const name = 'John Doe';
-    this.stripeService
-      .createToken(this.card.element, { name })
-      .subscribe((result) => {
-        if (result.token) {
-          console.log(result.token.id);
-          alert('Payment Successful Token: ' + result.token.id);
-        } else if (result.error) {
-          console.log(result.error.message);
-          alert('Payment Failed: ' + result.error.message);
-        }
-      });
+    this.submitting.set(true);
+    this.orderService.createOrder({ shippingAddress: this.shippingAddress }).subscribe({
+      next: (order) => {
+        this.submitting.set(false);
+        alert(`Order placed successfully! Order ID: ${order.id}`);
+        this.router.navigate(['/orders']);
+      },
+      error: (err) => {
+        this.submitting.set(false);
+        console.error('Failed to place order:', err);
+        alert('Failed to place order: ' + err.message);
+      }
+    });
+  }
+
+  validateAddress(): boolean {
+    return !!(this.shippingAddress.street &&
+      this.shippingAddress.city &&
+      this.shippingAddress.state &&
+      this.shippingAddress.zipCode &&
+      this.shippingAddress.country);
   }
 }
+

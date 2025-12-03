@@ -1,6 +1,9 @@
 import { Component, Input, inject } from '@angular/core';
 import { CartService } from '../../services/cart.service';
 import { CurrencyPipe } from '@angular/common';
+import { Product } from '../../models/api.models';
+import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-product-card',
@@ -10,10 +13,32 @@ import { CurrencyPipe } from '@angular/common';
   styles: ``
 })
 export class ProductCardComponent {
-  @Input() product: any;
+  @Input() product!: Product;
+
   cartService = inject(CartService);
+  authService = inject(AuthService);
+  router = inject(Router);
+
+  adding = false;
 
   addToCart() {
-    this.cartService.addToCart(this.product);
+    if (!this.authService.isLoggedIn()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    this.adding = true;
+    this.cartService.addToCart({ productId: this.product.id, quantity: 1 }).subscribe({
+      next: () => {
+        this.adding = false;
+        console.log('Added to cart successfully');
+      },
+      error: (err) => {
+        this.adding = false;
+        console.error('Failed to add to cart:', err);
+        alert('Failed to add to cart: ' + err.message);
+      }
+    });
   }
 }
+
