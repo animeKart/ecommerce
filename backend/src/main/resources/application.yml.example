@@ -1,8 +1,8 @@
 spring:
   data:
     mongodb:
-      uri: mongodb+srv://animekartcoin_db_user:TZxw7PsO1a9jHcuB@cluster0.kx66lrb.mongodb.net/?appName=Cluster0
-      database: animekartcoin_db
+      uri: <YOUR_MONGODB_URI_HERE>
+      database: <YOUR_DATABASE_NAME_HERE>
   application:
     name: ecommerce-backend
 
@@ -13,7 +13,7 @@ server:
     include-binding-errors: always
 
 jwt:
-  secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+  secret: <YOUR_JWT_SECRET_KEY_HERE>
   expiration: 86400000 # 24 hours in milliseconds
 
 # Logging
