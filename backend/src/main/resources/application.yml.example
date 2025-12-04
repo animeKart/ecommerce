@@ -1,0 +1,23 @@
+spring:
+  data:
+    mongodb:
+      uri: <YOUR_MONGODB_URI_HERE>
+      database: <YOUR_DATABASE_NAME_HERE>
+  application:
+    name: ecommerce-backend
+
+server:
+  port: 8080
+  error:
+    include-message: always
+    include-binding-errors: always
+
+jwt:
+  secret: <YOUR_JWT_SECRET_KEY_HERE>
+  expiration: 86400000 # 24 hours in milliseconds
+
+# Logging
+logging:
+  level:
+    org.springframework.data.mongodb: DEBUG
+    com.ecommerce: DEBUG
