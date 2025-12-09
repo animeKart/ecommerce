@@ -20,6 +20,7 @@ export class ProductCardComponent {
   router = inject(Router);
 
   adding = false;
+  isInWishlist = false;
 
   addToCart() {
     if (!this.authService.isLoggedIn()) {
@@ -39,6 +40,26 @@ export class ProductCardComponent {
         alert('Failed to add to cart: ' + err.message);
       }
     });
+  }
+
+  quickAddToCart(event: Event) {
+    event.stopPropagation();
+    this.addToCart();
+  }
+
+  toggleWishlist(event: Event) {
+    event.stopPropagation();
+    if (!this.authService.isLoggedIn()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    // Toggle wishlist state (would integrate with wishlist service in real app)
+    this.isInWishlist = !this.isInWishlist;
+    console.log(`Product ${this.product.id} ${this.isInWishlist ? 'added to' : 'removed from'} wishlist`);
+  }
+
+  viewProduct() {
+    this.router.navigate(['/products', this.product.id]);
   }
 }
 

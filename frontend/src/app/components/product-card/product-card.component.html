@@ -1,14 +1,65 @@
-<div class="card p-4 border rounded shadow-lg flex flex-col h-full">
-    <div class="h-48 bg-gray-200 mb-4 rounded flex items-center justify-center text-gray-500">
-        <!-- Placeholder image -->
-        <span>Image</span>
-    </div>
-    <h2 class="text-xl font-bold mb-2">{{ product.name }}</h2>
-    <p class="text-gray-600 mb-4">{{ product.description }}</p>
-    <div class="mt-auto flex justify-between items-center">
-        <span class="text-lg font-bold">{{ product.price | currency }}</span>
-        <button (click)="addToCart()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
-            Add to Cart
+<div class="product-card relative bg-white rounded-lg overflow-hidden card-hover cursor-pointer group">
+    <!-- Product Image with Wishlist Overlay -->
+    <div class="relative aspect-square bg-gray-100 overflow-hidden">
+        <!-- Image Placeholder -->
+        <div
+            class="w-full h-full flex items-center justify-center text-gray-400 bg-gradient-to-br from-gray-50 to-gray-100">
+            <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                </path>
+            </svg>
+        </div>
+
+        <!-- Wishlist Heart Icon (Top Right) -->
+        <button (click)="toggleWishlist($event)"
+            class="absolute top-3 right-3 p-2 bg-white rounded-full shadow-md hover:scale-110 transition-transform z-10"
+            [class.text-red-600]="isInWishlist" [class.text-gray-400]="!isInWishlist">
+            <svg class="w-5 h-5" [attr.fill]="isInWishlist ? 'currentColor' : 'none'" stroke="currentColor"
+                viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z">
+                </path>
+            </svg>
         </button>
+
+        <!-- Quick Add Button (Appears on Hover) -->
+        <div
+            class="absolute inset-x-0 bottom-0 p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+            <button (click)="quickAddToCart($event)"
+                class="w-full bg-black text-white py-2 px-4 rounded-md hover:bg-red-600 transition-colors font-medium">
+                Quick Add
+            </button>
+        </div>
     </div>
+
+    <!-- Product Info -->
+    <div class="p-4" (click)="viewProduct()">
+        <!-- Product Name -->
+        <h3 class="font-semibold text-base mb-1 line-clamp-2 text-gray-900">
+            {{ product.name }}
+        </h3>
+
+        <!-- Product Description -->
+        <p class="text-sm text-gray-500 mb-2 line-clamp-1">
+            {{ product.description }}
+        </p>
+
+        <!-- Price -->
+        <div class="flex items-center justify-between">
+            <span class="text-lg font-bold text-gray-900">
+                {{ product.price | currency }}
+            </span>
+        </div>
+
+        <!-- Stock Status -->
+        @if (product.stockQuantity !== undefined && product.stockQuantity <= 5) { <div class="mt-2">
+            @if (product.stockQuantity === 0) {
+            <span class="text-xs text-red-600 font-medium">Out of Stock</span>
+            } @else {
+            <span class="text-xs text-orange-600 font-medium">Only {{ product.stockQuantity }} left!</span>
+            }
+    </div>
+    }
+</div>
 </div>
