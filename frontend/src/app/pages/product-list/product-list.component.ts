@@ -2,12 +2,13 @@ import { Component, inject, signal } from '@angular/core';
 import { ProductService } from '../../services/product.service';
 import { ProductCardComponent } from '../../components/product-card/product-card.component';
 import { CarouselComponent } from '../../components/carousel/carousel.component';
+import { CategoryCardsComponent } from '../../components/category-cards/category-cards.component';
 import { Product } from '../../models/api.models';
 
 @Component({
   selector: 'app-product-list',
   standalone: true,
-  imports: [ProductCardComponent, CarouselComponent],
+  imports: [ProductCardComponent, CarouselComponent, CategoryCardsComponent],
   templateUrl: './product-list.component.html',
   styles: ``
 })

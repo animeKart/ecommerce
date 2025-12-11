@@ -31,13 +31,13 @@ export class CarouselComponent implements OnInit, OnDestroy {
     currentSlide = signal(0);
     private intervalId: any;
 
-    // Placeholder images - user will add real links later
+    // Static images - place your images in: src/assets/images/carousel/
     slides = [
-        'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1200&h=500&fit=crop',
-        'https://images.unsplash.com/photo-1607082349566-187342175e2f?w=1200&h=500&fit=crop',
-        'https://images.unsplash.com/photo-1607082350899-7e105aa886ae?w=1200&h=500&fit=crop',
-        'https://images.unsplash.com/photo-1607083206968-13611e3d76db?w=1200&h=500&fit=crop',
-        'https://images.unsplash.com/photo-1607083206869-4c7672e72a8a?w=1200&h=500&fit=crop'
+        'assets/images/carousel/img1.png',
+        'assets/images/carousel/img2.png',
+        'assets/images/carousel/img3.png',
+        'assets/images/carousel/img4.png',
+        'assets/images/carousel/img5.png'
     ];
 
     ngOnInit() {
