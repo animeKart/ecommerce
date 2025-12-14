@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { ProductService } from '../../services/product.service';
 import { ProductCardComponent } from '../../components/product-card/product-card.component';
 import { CarouselComponent } from '../../components/carousel/carousel.component';
@@ -12,7 +12,7 @@ import { Product } from '../../models/api.models';
   templateUrl: './product-list.component.html',
   styles: ``
 })
-export class ProductListComponent {
+export class ProductListComponent implements OnInit {
   productService = inject(ProductService);
 
   products = signal<Product[]>([]);

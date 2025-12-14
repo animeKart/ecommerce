@@ -10,7 +10,11 @@ import { Router } from '@angular/router';
   standalone: true,
   imports: [CurrencyPipe],
   templateUrl: './product-card.component.html',
-  styles: ``
+  styles: [`
+    :host {
+      display: block;
+    }
+  `]
 })
 export class ProductCardComponent {
   @Input() product!: Product;
