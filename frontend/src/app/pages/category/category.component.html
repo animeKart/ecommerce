@@ -1,0 +1,150 @@
+<div class="min-h-screen bg-gray-50">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Breadcrumb -->
+        <nav class="flex items-center gap-2 text-sm text-gray-500 mb-6">
+            <a routerLink="/" class="hover:text-gray-900 transition-colors">Home</a>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+            @if (categoryInfo()) {
+            <span class="text-gray-900 font-medium">{{ categoryInfo()!.name }}</span>
+            }
+        </nav>
+
+        <!-- Category Header -->
+        @if (categoryInfo()) {
+        <div class="mb-8">
+            <h1 class="text-4xl font-bold text-gray-900 mb-2">{{ categoryInfo()!.name }}</h1>
+            <p class="text-gray-600">{{ categoryInfo()!.description }}</p>
+        </div>
+        }
+
+        <!-- Search Bar -->
+        <div class="mb-8">
+            <div class="relative max-w-xl">
+                <input type="text" [(ngModel)]="searchInput" (keyup.enter)="onSearch()"
+                    placeholder="Search within category..."
+                    class="w-full px-4 py-3 pl-12 bg-white border border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all" />
+                <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none"
+                    stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+                @if (searchInput) {
+                <button (click)="clearSearch()"
+                    class="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-full transition-colors">
+                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
+                }
+            </div>
+
+            <!-- Active search indicator -->
+            @if (searchQuery()) {
+            <div class="mt-3 flex items-center gap-2">
+                <span class="text-sm text-gray-500">Showing results for:</span>
+                <span class="inline-flex items-center gap-1 px-3 py-1 bg-gray-100 rounded-full text-sm font-medium">
+                    "{{ searchQuery() }}"
+                    <button (click)="clearSearch()" class="ml-1 hover:text-red-500 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </span>
+            </div>
+            }
+        </div>
+
+        <!-- Results Count -->
+        @if (!loading() && totalElements() > 0) {
+        <p class="text-sm text-gray-500 mb-4">
+            Showing {{ products().length }} of {{ totalElements() }} products
+        </p>
+        }
+
+        <!-- Loading State -->
+        @if (loading()) {
+        <div class="flex items-center justify-center py-20">
+            <div class="flex flex-col items-center gap-4">
+                <div class="w-12 h-12 border-4 border-gray-200 border-t-black rounded-full animate-spin"></div>
+                <p class="text-gray-500">Loading products...</p>
+            </div>
+        </div>
+        }
+
+        <!-- Product Grid -->
+        @if (!loading()) {
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
+            @for (product of products(); track product.id) {
+            <div (click)="openProductModal(product)" class="cursor-pointer">
+                <app-product-card [product]="product"></app-product-card>
+            </div>
+            } @empty {
+            <div class="col-span-full flex flex-col items-center justify-center py-20">
+                <svg class="w-20 h-20 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4">
+                    </path>
+                </svg>
+                @if (searchQuery()) {
+                <p class="text-gray-500 text-lg mb-2">No products found for "{{ searchQuery() }}"</p>
+                <button (click)="clearSearch()" class="text-black hover:underline font-medium">
+                    Clear search
+                </button>
+                } @else {
+                <p class="text-gray-500 text-lg">No products in this category yet.</p>
+                }
+            </div>
+            }
+        </div>
+        }
+
+        <!-- Pagination -->
+        @if (totalPages() > 1 && !loading()) {
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mt-12">
+            <!-- Previous Button -->
+            <button (click)="previousPage()" [disabled]="currentPage() === 0"
+                class="flex items-center gap-2 px-5 py-2.5 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+                <span class="font-medium">Previous</span>
+            </button>
+
+            <!-- Page Numbers -->
+            <div class="flex items-center gap-1">
+                @for (page of getPageNumbers(); track page) {
+                <button (click)="goToPage(page)" [class.bg-black]="page === currentPage()"
+                    [class.text-white]="page === currentPage()" [class.bg-white]="page !== currentPage()"
+                    [class.text-gray-700]="page !== currentPage()"
+                    class="w-10 h-10 rounded-lg font-medium transition-all hover:bg-gray-100 border border-gray-200 shadow-sm">
+                    {{ page + 1 }}
+                </button>
+                }
+            </div>
+
+            <!-- Next Button -->
+            <button (click)="nextPage()" [disabled]="currentPage() >= totalPages() - 1"
+                class="flex items-center gap-2 px-5 py-2.5 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                <span class="font-medium">Next</span>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Page Info -->
+        <p class="text-center text-sm text-gray-500 mt-4">
+            Page {{ currentPage() + 1 }} of {{ totalPages() }}
+        </p>
+        }
+    </div>
+</div>
+
+<!-- Product Modal -->
+<app-product-modal [product]="selectedProduct()" [isOpen]="isModalOpen()" (close)="closeProductModal()"
+    (addedToCart)="onAddedToCart()">
+</app-product-modal>
