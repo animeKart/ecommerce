@@ -1,20 +1,22 @@
 import { Component, inject } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CartService } from '../../services/cart.service';
 import { AuthService } from '../../services/auth.service';
+import { WishlistService } from '../../services/wishlist.service';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive, FormsModule],
+  imports: [CommonModule, RouterLink, FormsModule],
   templateUrl: './navbar.component.html',
   styles: ``
 })
 export class NavbarComponent {
   cartService = inject(CartService);
   authService = inject(AuthService);
+  wishlistService = inject(WishlistService);
   router = inject(Router);
 
   searchQuery = '';
