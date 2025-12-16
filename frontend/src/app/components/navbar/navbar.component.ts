@@ -5,11 +5,12 @@ import { FormsModule } from '@angular/forms';
 import { CartService } from '../../services/cart.service';
 import { AuthService } from '../../services/auth.service';
 import { WishlistService } from '../../services/wishlist.service';
+import { CartDrawerComponent } from '../cart-drawer/cart-drawer.component';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, RouterLink, FormsModule, CartDrawerComponent],
   templateUrl: './navbar.component.html',
   styles: ``
 })
@@ -22,6 +23,7 @@ export class NavbarComponent {
   searchQuery = '';
   showUserMenu = false;
   showMobileMenu = false;
+  showCartDrawer = false;
 
   onSearch() {
     if (this.searchQuery.trim()) {
@@ -46,8 +48,17 @@ export class NavbarComponent {
     this.showMobileMenu = false;
   }
 
+  toggleCartDrawer() {
+    this.showCartDrawer = !this.showCartDrawer;
+  }
+
+  closeCartDrawer() {
+    this.showCartDrawer = false;
+  }
+
   logout() {
     this.authService.logout();
     this.closeUserMenu();
   }
 }
+

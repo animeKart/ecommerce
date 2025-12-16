@@ -21,6 +21,20 @@
 
       <!-- Navigation Icons -->
       <div class="flex items-center gap-6">
+        <!-- Cart Icon with Badge - Always visible -->
+        <button (click)="toggleCartDrawer()" class="relative hover:text-red-500 transition-colors">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+          </svg>
+          @if (cartService.cartCount() > 0) {
+          <span
+            class="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+            {{ cartService.cartCount() }}
+          </span>
+          }
+        </button>
+
         @if (authService.isLoggedIn()) {
         <!-- Wishlist Icon -->
         <a routerLink="/wishlist" class="relative hover:text-red-500 transition-colors hidden sm:block">
@@ -33,20 +47,6 @@
           <span
             class="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
             {{ wishlistService.wishlistCount() }}
-          </span>
-          }
-        </a>
-
-        <!-- Cart Icon with Badge -->
-        <a routerLink="/cart" class="relative hover:text-red-500 transition-colors">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
-          </svg>
-          @if (cartService.cartCount() > 0) {
-          <span
-            class="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-            {{ cartService.cartCount() }}
           </span>
           }
         </a>
@@ -128,3 +128,7 @@
     }
   </div>
 </nav>
+
+<!-- Cart Drawer -->
+<app-cart-drawer [isOpen]="showCartDrawer" (close)="closeCartDrawer()">
+</app-cart-drawer>
