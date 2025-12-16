@@ -1,6 +1,10 @@
 <div class="product-card relative bg-white rounded-lg overflow-hidden card-hover cursor-pointer group">
     <!-- Product Image with Wishlist Overlay -->
     <div class="relative aspect-square bg-gray-100 overflow-hidden">
+        @if (product.imageUrl) {
+        <img [src]="product.imageUrl" [alt]="product.name"
+            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+        } @else {
         <!-- Image Placeholder -->
         <div
             class="w-full h-full flex items-center justify-center text-gray-400 bg-gradient-to-br from-gray-50 to-gray-100">
@@ -10,6 +14,7 @@
                 </path>
             </svg>
         </div>
+        }
 
         <!-- Wishlist Heart Icon (Top Right) -->
         <button (click)="toggleWishlist($event)"
