@@ -17,14 +17,13 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // Delete all existing products and re-seed
-        long existingCount = productRepository.count();
-        if (existingCount > 0) {
-            System.out.println("Deleting " + existingCount + " existing products...");
-            productRepository.deleteAll();
+        // Only seed if database is empty (preserves any manually added products)
+        if (productRepository.count() > 0) {
+            System.out.println("Products already exist in database. Skipping seed.");
+            return;
         }
 
-        System.out.println("Seeding product data...");
+        System.out.println("Database is empty. Seeding product data...");
 
         List<Product> products = Arrays.asList(
                 // ============ ANIME CATEGORY ============
