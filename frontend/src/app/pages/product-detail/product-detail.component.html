@@ -1,37 +1,167 @@
-<div class="container mx-auto p-4 mt-10">
-    @if (loading()) {
-    <div class="text-center py-8">Loading product...</div>
-    } @else if (product()) {
-    <div class="grid md:grid-cols-2 gap-8 bg-white rounded shadow-md p-6">
-        <div>
-            <img [src]="product()!.imageUrl" [alt]="product()!.name" class="w-full rounded">
+<div class="min-h-screen bg-gray-50">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Breadcrumb -->
+        <nav class="flex items-center gap-2 text-sm text-gray-500 mb-6">
+            <a routerLink="/" class="hover:text-gray-900 transition-colors">Home</a>
+            @if (product()) {
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+            <a [routerLink]="['/category', getCategorySlug()]" class="hover:text-gray-900 transition-colors">
+                {{ product()!.category }}
+            </a>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+            <span class="text-gray-900 font-medium line-clamp-1">{{ product()!.name }}</span>
+            }
+        </nav>
+
+        @if (loading()) {
+        <div class="flex items-center justify-center py-20">
+            <div class="flex flex-col items-center gap-4">
+                <div class="w-12 h-12 border-4 border-gray-200 border-t-black rounded-full animate-spin"></div>
+                <p class="text-gray-500">Loading product...</p>
+            </div>
         </div>
-        <div>
-            <h1 class="text-3xl font-bold mb-4">{{ product()!.name }}</h1>
-            <p class="text-gray-600 mb-4">{{ product()!.description }}</p>
-            <p class="text-sm text-gray-500 mb-2">Category: {{ product()!.category }}</p>
-            <p class="text-2xl font-bold text-green-600 mb-4">{{ product()!.price | currency }}</p>
-            <p class="text-sm mb-4" [class.text-green-600]="product()!.stockQuantity > 0"
-                [class.text-red-600]="product()!.stockQuantity === 0">
-                @if (product()!.stockQuantity > 0) {
-                <span>In Stock: {{ product()!.stockQuantity }} available</span>
-                } @else {
-                <span>Out of Stock</span>
-                }
-            </p>
-            <button (click)="addToCart()" [disabled]="adding() || product()!.stockQuantity === 0"
-                class="w-full bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition disabled:bg-gray-400 disabled:cursor-not-allowed">
-                @if (adding()) {
-                <span>Adding to Cart...</span>
-                } @else {
-                <span>Add to Cart</span>
-                }
-            </button>
+        } @else if (product()) {
+        <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+            <div class="grid md:grid-cols-2 gap-0">
+                <!-- Product Image -->
+                <div
+                    class="relative bg-gradient-to-br from-gray-50 to-gray-100 aspect-square md:aspect-auto md:min-h-[500px]">
+                    @if (product()!.imageUrl) {
+                    <img [src]="product()!.imageUrl" [alt]="product()!.name" class="w-full h-full object-cover">
+                    } @else {
+                    <div class="w-full h-full flex items-center justify-center text-gray-400">
+                        <svg class="w-24 h-24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                            </path>
+                        </svg>
+                    </div>
+                    }
+
+                    <!-- Wishlist Button -->
+                    <button (click)="toggleWishlist()"
+                        class="absolute top-4 left-4 p-3 bg-white rounded-full shadow-lg hover:scale-110 transition-all"
+                        [class.text-red-500]="isInWishlist()" [class.text-gray-400]="!isInWishlist()">
+                        <svg class="w-6 h-6" [attr.fill]="isInWishlist() ? 'currentColor' : 'none'"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z">
+                            </path>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Product Details -->
+                <div class="p-6 md:p-8 flex flex-col justify-between">
+                    <div>
+                        <!-- Category Badge -->
+                        <a [routerLink]="['/category', getCategorySlug()]"
+                            class="inline-block px-3 py-1 bg-gray-100 text-gray-600 text-sm rounded-full mb-3 hover:bg-gray-200 transition-colors">
+                            {{ product()!.category }}
+                        </a>
+
+                        <!-- Product Name -->
+                        <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
+                            {{ product()!.name }}
+                        </h1>
+
+                        <!-- Price -->
+                        <p class="text-3xl font-bold text-green-600 mb-4">
+                            {{ product()!.price | currency }}
+                        </p>
+
+                        <!-- Description -->
+                        <p class="text-gray-600 leading-relaxed mb-6">
+                            {{ product()!.description }}
+                        </p>
+
+                        <!-- Stock Status -->
+                        <div class="mb-6">
+                            @if (product()!.stockQuantity > 10) {
+                            <span class="inline-flex items-center gap-2 text-green-600">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="font-medium">In Stock ({{ product()!.stockQuantity }} available)</span>
+                            </span>
+                            } @else if (product()!.stockQuantity > 0) {
+                            <span class="inline-flex items-center gap-2 text-orange-500">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="font-medium">Only {{ product()!.stockQuantity }} left!</span>
+                            </span>
+                            } @else {
+                            <span class="inline-flex items-center gap-2 text-red-600">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="font-medium">Out of Stock</span>
+                            </span>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex gap-3">
+                        <button (click)="addToCart()" [disabled]="adding() || product()!.stockQuantity === 0"
+                            class="flex-1 bg-black text-white py-3 px-6 rounded-lg font-semibold hover:bg-gray-800 transition-all disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                            @if (adding()) {
+                            <svg class="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                    stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                </path>
+                            </svg>
+                            <span>Adding...</span>
+                            } @else {
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                            </svg>
+                            <span>Add to Cart</span>
+                            }
+                        </button>
+
+                        <button (click)="toggleWishlist()"
+                            class="p-3 border-2 rounded-lg transition-all hover:scale-105"
+                            [class.border-red-500]="isInWishlist()" [class.bg-red-50]="isInWishlist()"
+                            [class.text-red-500]="isInWishlist()" [class.border-gray-300]="!isInWishlist()"
+                            [class.text-gray-500]="!isInWishlist()">
+                            <svg class="w-6 h-6" [attr.fill]="isInWishlist() ? 'currentColor' : 'none'"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z">
+                                </path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
+        } @else {
+        <div class="flex flex-col items-center justify-center py-20 bg-white rounded-xl shadow-sm">
+            <svg class="w-20 h-20 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                </path>
+            </svg>
+            <p class="text-gray-500 text-lg mb-4">Product not found</p>
+            <a routerLink="/" class="text-black hover:underline font-medium">
+                Return to Home
+            </a>
+        </div>
+        }
     </div>
-    } @else {
-    <div class="text-center py-8">
-        <p class="text-gray-600">Product not found</p>
-    </div>
-    }
 </div>
