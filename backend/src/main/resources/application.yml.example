@@ -5,6 +5,18 @@ spring:
       database: <YOUR_DATABASE_NAME_HERE>
   application:
     name: ecommerce-backend
+  # Email configuration (optional - for password reset emails)
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: <YOUR_EMAIL_HERE>
+    password: <YOUR_EMAIL_APP_PASSWORD_HERE>
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
 server:
   port: 8080
@@ -16,8 +28,13 @@ jwt:
   secret: <YOUR_JWT_SECRET_KEY_HERE>
   expiration: 86400000 # 24 hours in milliseconds
 
+# Application settings
+app:
+  frontend-url: http://localhost:4200
+
 # Logging
 logging:
   level:
     org.springframework.data.mongodb: DEBUG
     com.ecommerce: DEBUG
+

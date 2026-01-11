@@ -2,7 +2,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { ApiService } from './api.service';
 import { tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { ApiResponse, LoginRequest, LoginResponse, RegisterRequest, User } from '../models/api.models';
+import { ApiResponse, ForgotPasswordRequest, LoginRequest, LoginResponse, RegisterRequest, ResetPasswordRequest, User } from '../models/api.models';
 import { map } from 'rxjs/operators';
 
 @Injectable({
@@ -50,6 +50,30 @@ export class AuthService {
         );
     }
 
+    forgotPassword(email: string) {
+        const request: ForgotPasswordRequest = { email };
+        return this.api.post<ApiResponse<void>>('/api/auth/forgot-password', request).pipe(
+            map(response => {
+                if (!response.success) {
+                    throw new Error(response.message);
+                }
+                return response;
+            })
+        );
+    }
+
+    resetPassword(token: string, newPassword: string) {
+        const request: ResetPasswordRequest = { token, newPassword };
+        return this.api.post<ApiResponse<void>>('/api/auth/reset-password', request).pipe(
+            map(response => {
+                if (!response.success) {
+                    throw new Error(response.message);
+                }
+                return response;
+            })
+        );
+    }
+
     logout() {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
@@ -63,4 +87,5 @@ export class AuthService {
         return user?.role === 'ADMIN';
     }
 }
+
 

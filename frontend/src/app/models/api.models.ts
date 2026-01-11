@@ -51,6 +51,15 @@ export interface RegisterRequest {
     lastName: string;
 }
 
+export interface ForgotPasswordRequest {
+    email: string;
+}
+
+export interface ResetPasswordRequest {
+    token: string;
+    newPassword: string;
+}
+
 // Product Models
 export interface Product {
     id: string;
